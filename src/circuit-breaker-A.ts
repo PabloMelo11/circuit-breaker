@@ -48,15 +48,11 @@ export default class CircuitBreaker {
 
     const state = this.states[endpoint]
 
-    console.log('STATE -> ', state.circuit)
-
     if (state.circuit === 'CLOSED') {
       return true
     }
 
     const theTimeLimitHasAlreadyPassed = Date.now() - state.lastAttempt > this.retryTimeout
-
-    console.log('LIMIT PASSED -> ', theTimeLimitHasAlreadyPassed)
 
     if (theTimeLimitHasAlreadyPassed) {
       state.circuit = 'HALF-OPEN'
