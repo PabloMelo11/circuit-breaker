@@ -65,6 +65,8 @@ export default class CircuitBreaker {
 
     if (this.state === State.HalfOpen && theTimeLimitHasAlreadyPassed) {
       return this.tryRequestInternal(url);
+    } else if (this.state === State.HalfOpen && !theTimeLimitHasAlreadyPassed) {
+      throw new Error('The time limit for new attempts has not yet passed')
     }
 
     return this.tryRequestInternal(url);
