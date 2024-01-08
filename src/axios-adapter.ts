@@ -9,7 +9,11 @@ export default class AxiosAdapter implements HttpClient {
 	}
 
 	async get(url: string): Promise<any> {
-		const response = await axios.get(url);
-		return response.data;
+		try {
+			const response = await axios.get(url);
+			return response.data;
+		} catch (err) {
+			return err;
+		}
 	}
 }
