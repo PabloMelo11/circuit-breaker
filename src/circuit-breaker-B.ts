@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-enum State {
+export enum State {
   Closed = 'closed',
   Open = 'open',
   HalfOpen = 'halfOpen',
@@ -48,11 +48,16 @@ export default class CircuitBreaker {
   private async tryRequestInternal(url: string): Promise<any> {
     try {
       const response = await axios.get(url);
+
+      if (response instanceof Error) {
+        throw new Error()
+      }
+
       this.reset();
       return response.data;
     } catch (error) {
       this.handleFailure();
-      return null
+      return false
     }
   }
 
@@ -63,12 +68,12 @@ export default class CircuitBreaker {
 
     const theTimeLimitHasAlreadyPassed = Date.now() - this.lastAttempt > this.retryTimeout
 
-    if (this.state === State.HalfOpen && theTimeLimitHasAlreadyPassed) {
-      return this.tryRequestInternal(url);
-    } else if (this.state === State.HalfOpen && !theTimeLimitHasAlreadyPassed) {
+    if (this.state === State.HalfOpen && !theTimeLimitHasAlreadyPassed) {
       return false
     }
 
-    return this.tryRequestInternal(url);
+    const responseRequest = await this.tryRequestInternal(url);
+
+    return responseRequest;
   }
 }
