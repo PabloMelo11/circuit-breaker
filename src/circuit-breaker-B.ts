@@ -56,9 +56,9 @@ export default class CircuitBreaker {
     }
   }
 
-  public async callService(url: string): Promise<any> {
+  public async callService(url: string): Promise<Record<string, unknown> | boolean> {
     if (this.state === State.Open) {
-      throw new Error('Circuit Breaker is open');
+      return false
     }
 
     const theTimeLimitHasAlreadyPassed = Date.now() - this.lastAttempt > this.retryTimeout
@@ -66,7 +66,7 @@ export default class CircuitBreaker {
     if (this.state === State.HalfOpen && theTimeLimitHasAlreadyPassed) {
       return this.tryRequestInternal(url);
     } else if (this.state === State.HalfOpen && !theTimeLimitHasAlreadyPassed) {
-      throw new Error('The time limit for new attempts has not yet passed')
+      return false
     }
 
     return this.tryRequestInternal(url);
