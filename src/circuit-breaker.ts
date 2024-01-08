@@ -1,4 +1,4 @@
-import axios from 'axios';
+import HttpClient from './http-client';
 
 export enum State {
   Closed = 'closed',
@@ -12,6 +12,8 @@ export default class CircuitBreaker {
   private failureCount = 0;
   private retryTimeout = 5000;
   private lastAttempt = 0;
+
+  constructor(private httpClient: HttpClient) {}
 
   private async sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -47,14 +49,14 @@ export default class CircuitBreaker {
 
   private async tryRequestInternal(url: string): Promise<any> {
     try {
-      const response = await axios.get(url);
+      const response = await this.httpClient.get(url);
 
       if (response instanceof Error) {
         throw new Error()
       }
-
+      
       this.reset();
-      return response.data;
+      return response;
     } catch (error) {
       this.handleFailure();
       return false

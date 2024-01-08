@@ -1,21 +1,20 @@
 import express from 'express';
 import cors from 'cors';
-import CircuitBreaker from './circuit-breaker-A';
+import CircuitBreaker from './circuit-breaker';
+import AxiosAdapter from './axios-adapter';
 
 const app = express();
 
 app.use(express.json());
 app.use(cors())
 
-const circuitBreaker = new CircuitBreaker();
+const axiosAdapter = new AxiosAdapter();
+const circuitBreaker = new CircuitBreaker(axiosAdapter);
 
 app.get('/', async (req, res) => {
   const url = 'http://localhost:3333/';
 
-  const response = await circuitBreaker.callService({
-    url,
-    method: 'GET',
-  });
+  const response = await circuitBreaker.callService(url);
 
   if (!response) {
     console.log('error')
