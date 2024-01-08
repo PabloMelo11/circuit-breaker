@@ -1,7 +1,7 @@
 export default {
   clearMocks: true,
   collectCoverage: true,
-  collectCoverageFrom: ['<rootDir>/src/circuit-breaker-B.ts'],
+  collectCoverageFrom: ['<rootDir>/src/circuit-breaker.ts'],
   coverageDirectory: 'coverage',
   coverageProvider: 'v8',
   coverageReporters: ['text-summary', 'lcov'],
